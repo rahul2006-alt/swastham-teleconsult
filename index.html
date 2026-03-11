@@ -4,7 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Swastham — Tele-Consultation</title>
-<script src="https://cdn.jsdelivr.net/npm/@100mslive/hms-video-store@0.10.12/dist/index.umd.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "@100mslive/hms-video-store": "https://cdn.skypack.dev/@100mslive/hms-video-store"
+    }
+  }
+</script>
+<script type="module">
+  import { HMSReactiveStore, selectIsConnectedToRoom, selectPeers, selectLocalVideoTrackID, selectRemotePeers } from "@100mslive/hms-video-store";
+  window.HMSReactiveStore = HMSReactiveStore;
+  window.selectIsConnectedToRoom = selectIsConnectedToRoom;
+  window.selectPeers = selectPeers;
+  window.selectLocalVideoTrackID = selectLocalVideoTrackID;
+  window.selectRemotePeers = selectRemotePeers;
+  window.hmsSDKLoaded = true;
+  console.log("100ms SDK loaded successfully");
+</script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -925,8 +941,10 @@ let joined = false;
 
 // ── Init SDK ────────────────────────────────────────────
 function initSDK() {
-  if (typeof HMSReactiveStore !== 'undefined') {
-    const hms = new HMSReactiveStore();
+  // Use globals exposed by ES module
+  if (window.hmsSDKLoaded && typeof window.HMSReactiveStore !== "undefined") {
+    const hms = new window.HMSReactiveStore();
+    hms.triggerOnSubscribe();
     hmsStore   = hms.getStore();
     hmsActions = hms.getActions();
     hmsNotifications = hms.getNotifications();
@@ -1020,7 +1038,7 @@ async function joinRoom() {
   }
 
   if (!initSDK()) {
-    showToast('100ms SDK failed to load. Check your connection.', 'error');
+    showToast('100ms SDK still loading, please wait 2 seconds and try again.', 'error');
     return;
   }
 
