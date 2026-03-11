@@ -323,8 +323,7 @@ function formatDateTime(iso) {
 }
 
 function isJoinable(scheduledAt) {
-  const diff = new Date(scheduledAt) - new Date();
-  return diff <= 5*60*1000 && diff >= -30*60*1000; // 5 min before to 30 min after
+  return true; // TEST MODE: always joinable
 }
 
 function show(id) { document.getElementById(id).style.display=''; }
